@@ -14,6 +14,7 @@ import Login from "./Components/Pages/Login/Login";
 import Register from "./Components/Pages/Login/Register";
 import Root from "./Components/Root/Root";
 import AuthProvider from "./Provider/AuthProvider";
+import PrivateRoute from "./PrivateRoute/PrivateRoute";
 
 
 
@@ -37,7 +38,9 @@ const router = createBrowserRouter([
       },
       {
         path: 'product/:id',
-        element: <ProductDetail />,
+        element: <PrivateRoute>
+          <ProductDetail />
+        </PrivateRoute>,
         loader: async ({ params }) => (fetch(`${url}/${params.id}`))
       },
       {
