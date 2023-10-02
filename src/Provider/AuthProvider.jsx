@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
+import { GoogleAuthProvider, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import { createContext, useEffect, useState } from "react";
 import auth from "../config/firebase";
 
@@ -10,17 +10,21 @@ const AuthProvider = ({children}) => {
 
 // state 
 const [user, setUser] = useState(null)
+const [loading, setLoading] = useState(true)
+
 
 
 
 // google login 
 const googleLogin = ()=> {
+    setLoading(true)
     return signInWithPopup(auth, googleProvider)
 }
 
 
 // sign up 
 const createUser = (email, password) => {
+    setLoading(true)
     return createUserWithEmailAndPassword(auth, email, password)
 }
 
@@ -28,6 +32,7 @@ const createUser = (email, password) => {
 
 // sign in 
 const signIn = (email, password) => {
+    setLoading(true)
     return signInWithEmailAndPassword(auth, email,password)
 }
 
@@ -36,14 +41,20 @@ const logout = () => {
     return signOut(auth)
 }
 
+// update profile 
+const updateProfileInfo = (name, photo) => {
+    return updateProfile(auth.currentUser, {
+        displayName: name, photoURL: photo
+    })
 
-
-
+}
 
 // user can stay until he log out (facebook)
 useEffect(()=>{
     onAuthStateChanged(auth, (currentUser) => {
-        setUser(currentUser)
+        setUser(currentUser);
+        setLoading(false)
+        // we have to use setLoading(true) because when we set it's value false this is set as a false. So, we set this true in other function
     });
 },[])
 
@@ -51,12 +62,15 @@ useEffect(()=>{
 // useEffect(()=>{
 //     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
 //         setUser(currentUser)
+//         setLoading(true)
 //     });
 //     return () => {
 //         unsubscribe()
 //     }
 // },[])
-console.log(user);
+
+
+// console.log(user);
 
 
 
@@ -64,7 +78,7 @@ console.log(user);
 
 // export function 
 const authentication = {
-    googleLogin,  createUser,signIn ,logout, user
+    googleLogin,  createUser,signIn ,logout, user ,loading,updateProfileInfo
 }
 
     return (

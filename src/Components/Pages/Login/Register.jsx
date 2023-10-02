@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 import SocialLogin from './SocialLogin';
@@ -10,7 +10,8 @@ const Register = () => {
 
 
 
-const {createUser} = useAuth();
+const {createUser,updateProfileInfo} = useAuth();
+const navigate = useNavigate()
 
 
 const handleSubmit = (e) =>{
@@ -19,6 +20,7 @@ const handleSubmit = (e) =>{
     const name = e.target.name.value
     const email = e.target.email.value
     const password = e.target.password.value
+    const image = e.target.img.value
     console.log(name, email, password);
 
     // validation 
@@ -28,8 +30,15 @@ const handleSubmit = (e) =>{
 
     // create a new user 
     createUser(email, password)
-    .then(result => console.log(result.user))
-    .catch(error => console.log(error))
+    .then(result => {
+        console.log(result.user);
+        updateProfileInfo(name,image)
+            .then(()=> {
+                toast.success('user crated successfully');
+                navigate('/')
+            })
+        })
+        .catch(error => toast.error(error.message))
 
 
     
@@ -50,6 +59,14 @@ const handleSubmit = (e) =>{
                                     <span className="label-text">Full Name</span>
                                 </label>
                                 <input type="text" placeholder="Full name" className="input input-bordered" name='name'/>
+                            </div>
+                            
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text">Image</span>
+                                </label>
+                                <img src="" alt="" />
+                                <input type="img" placeholder="img" className="input input-bordered" name='img' />
                             </div>
                             <div className="form-control">
                                 <label className="label">
@@ -80,3 +97,4 @@ const handleSubmit = (e) =>{
 };
 
 export default Register;
+
